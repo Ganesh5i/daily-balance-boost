@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
   {
     variants: {
       variant: {
@@ -15,12 +15,21 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        water: "gradient-water text-water-foreground glow-water hover:opacity-90",
+        protein: "gradient-protein text-protein-foreground hover:opacity-90",
+        expense: "gradient-expense text-expense-foreground glow-accent hover:opacity-90",
+        softWater: "bg-water/10 text-water hover:bg-water/20",
+        softProtein: "bg-protein/10 text-protein hover:bg-protein/20",
+        softExpense: "bg-expense/10 text-expense hover:bg-expense/20",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        lg: "h-12 rounded-xl px-6 text-base",
+        xl: "h-14 rounded-xl px-8 text-lg",
         icon: "h-10 w-10",
+        iconSm: "h-8 w-8",
+        iconLg: "h-12 w-12",
       },
     },
     defaultVariants: {
