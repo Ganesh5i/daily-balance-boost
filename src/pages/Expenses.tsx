@@ -7,7 +7,9 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -16,7 +18,7 @@ import {
   addExpense,
   deleteExpense,
   getTodayDate,
-  categories,
+  categoryGroups,
   categoryIcons,
   Expense,
 } from '@/lib/storage';
@@ -115,14 +117,22 @@ export default function Expenses() {
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        <span className="flex items-center gap-2">
-                          <span>{categoryIcons[cat.value]}</span>
-                          <span>{cat.label}</span>
-                        </span>
-                      </SelectItem>
+                  <SelectContent className="max-h-[300px]">
+                    {categoryGroups.map((group) => (
+                      <SelectGroup key={group.group}>
+                        <SelectLabel className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                          <span>{group.emoji}</span>
+                          {group.group}
+                        </SelectLabel>
+                        {group.items.map((cat) => (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            <span className="flex items-center gap-2">
+                              <span>{categoryIcons[cat.value]}</span>
+                              <span>{cat.label}</span>
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
                     ))}
                   </SelectContent>
                 </Select>
