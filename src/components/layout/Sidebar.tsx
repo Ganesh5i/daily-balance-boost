@@ -1,19 +1,29 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Drumstick, Droplets, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Wallet, Drumstick, Droplets, Menu, X, Calendar, FileText, Shield, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-
-const navItems = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/expenses', icon: Wallet, label: 'Expenses' },
-  { path: '/protein', icon: Drumstick, label: 'Protein Diet' },
-  { path: '/water', icon: Droplets, label: 'Water Tracker' },
-];
+import { useAuth } from '@/hooks/useAuth';
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const navItems = [
+    { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/expenses', icon: Wallet, label: 'Expenses' },
+    { path: '/protein', icon: Drumstick, label: 'Protein Diet' },
+    { path: '/water', icon: Droplets, label: 'Water Tracker' },
+    { path: '/analysis', icon: Calendar, label: 'Analysis' },
+    { path: '/notes', icon: FileText, label: 'Notes / To-Do' },
+    ...(isAdmin ? [{ path: '/admin', icon: Shield, label: 'Admin Panel' }] : []),
+  ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -82,13 +92,22 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Footer */}
+        {/* Footer with user info */}
         <div className="absolute bottom-0 left-0 right-0 border-t p-4">
-          <div className="rounded-xl bg-secondary/50 p-4">
-            <p className="text-xs font-medium text-muted-foreground">
-              Track your daily expenses and health goals
-            </p>
-          </div>
+          {user && (
+            <div className="rounded-xl bg-secondary/50 p-4">
+              <p className="text-xs font-medium truncate">{user.email}</p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2 w-full justify-start text-muted-foreground"
+                onClick={handleSignOut}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+          )}
         </div>
       </aside>
     </>

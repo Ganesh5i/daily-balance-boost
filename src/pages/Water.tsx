@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Droplets, Check, RotateCcw } from 'lucide-react';
+import { Droplets, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { getTodayWaterIntake, addWaterEntry, getWaterEntries, getTodayDate } from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+
+interface WaterEntry {
+  id: string;
+  amount_ml: number;
+  created_at: string;
+}
 
 const WATER_GOAL = 4000; // ml (4 liters)
 
@@ -15,37 +23,65 @@ const waterButtons = [
 ];
 
 export default function Water() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [waterIntake, setWaterIntake] = useState(0);
-  const [recentEntries, setRecentEntries] = useState<{ amount: number; timestamp: number }[]>([]);
+  const [recentEntries, setRecentEntries] = useState<WaterEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loadData = () => {
-    setWaterIntake(getTodayWaterIntake());
-    const today = getTodayDate();
-    const entries = getWaterEntries()
-      .filter((e) => e.date === today)
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, 5);
-    setRecentEntries(entries);
-  };
+  const today = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (user) {
+      loadData();
+    }
+  }, [user]);
 
-  const handleAddWater = (amount: number) => {
-    addWaterEntry(amount);
-    loadData();
-    
-    const newTotal = waterIntake + amount;
-    const isGoalNowMet = newTotal >= WATER_GOAL && waterIntake < WATER_GOAL;
-    
-    toast({
-      title: isGoalNowMet ? "🎉 Goal Achieved!" : "Water logged",
-      description: isGoalNowMet
-        ? "You've hit your daily water goal!"
-        : `+${amount}ml added (Total: ${(newTotal / 1000).toFixed(1)}L)`,
+  const loadData = async () => {
+    if (!user) return;
+    setIsLoading(true);
+
+    const { data, error } = await supabase
+      .from('water_entries')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .order('created_at', { ascending: false });
+
+    if (data) {
+      setRecentEntries(data.slice(0, 5));
+      setWaterIntake(data.reduce((sum, e) => sum + Number(e.amount_ml), 0));
+    }
+    setIsLoading(false);
+  };
+
+  const handleAddWater = async (amount: number) => {
+    if (!user) return;
+
+    const { error } = await supabase.from('water_entries').insert({
+      user_id: user.id,
+      amount_ml: amount,
+      date: today,
     });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log water",
+        variant: "destructive",
+      });
+    } else {
+      const newTotal = waterIntake + amount;
+      const isGoalNowMet = newTotal >= WATER_GOAL && waterIntake < WATER_GOAL;
+      
+      loadData();
+      toast({
+        title: isGoalNowMet ? "🎉 Goal Achieved!" : "Water logged",
+        description: isGoalNowMet
+          ? "You've hit your daily water goal!"
+          : `+${amount}ml added (Total: ${(newTotal / 1000).toFixed(1)}L)`,
+      });
+    }
   };
 
   const progress = (waterIntake / WATER_GOAL) * 100;
@@ -151,9 +187,6 @@ export default function Water() {
                     ? 'border-water bg-water/20 text-water'
                     : 'border-border bg-muted/30 text-muted-foreground/30'
                 }`}
-                style={{
-                  animationDelay: `${i * 0.05}s`,
-                }}
               >
                 <span className="text-xl">{i < glassesCount ? '💧' : '○'}</span>
               </div>
@@ -173,17 +206,17 @@ export default function Water() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {recentEntries.map((entry, index) => (
+              {recentEntries.map((entry) => (
                 <div
-                  key={entry.timestamp}
+                  key={entry.id}
                   className="flex items-center justify-between rounded-lg bg-water/5 px-4 py-3"
                 >
                   <span className="flex items-center gap-2">
                     <span>💧</span>
-                    <span className="font-medium">+{entry.amount}ml</span>
+                    <span className="font-medium">+{entry.amount_ml}ml</span>
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {new Date(entry.timestamp).toLocaleTimeString('en-IN', {
+                    {new Date(entry.created_at).toLocaleTimeString('en-IN', {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}

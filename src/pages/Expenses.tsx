@@ -13,35 +13,69 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  getTodayExpenses,
-  addExpense,
-  deleteExpense,
-  getTodayDate,
-  categoryGroups,
-  categoryIcons,
-  Expense,
-} from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+
+interface Expense {
+  id: string;
+  item_name: string;
+  category: string;
+  amount: number;
+  date: string;
+}
+
+interface ExpenseCategory {
+  id: string;
+  name: string;
+  emoji: string;
+  group_name: string;
+}
 
 export default function Expenses() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [item, setItem] = useState('');
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loadExpenses = () => {
-    setExpenses(getTodayExpenses());
-  };
+  const today = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
-    loadExpenses();
-  }, []);
+    if (user) {
+      loadData();
+    }
+  }, [user]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const loadData = async () => {
+    if (!user) return;
+    setIsLoading(true);
+
+    const [expensesRes, categoriesRes] = await Promise.all([
+      supabase
+        .from('expenses')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('date', today)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('expense_categories')
+        .select('*')
+        .order('group_name', { ascending: true }),
+    ]);
+
+    if (expensesRes.data) setExpenses(expensesRes.data);
+    if (categoriesRes.data) setCategories(categoriesRes.data);
+    setIsLoading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!item.trim() || !category || !amount) {
+    if (!item.trim() || !category || !amount || !user) {
       toast({
         title: "Missing fields",
         description: "Please fill all fields",
@@ -50,38 +84,63 @@ export default function Expenses() {
       return;
     }
 
-    addExpense({
-      item: item.trim(),
+    const { error } = await supabase.from('expenses').insert({
+      user_id: user.id,
+      item_name: item.trim(),
       category,
       amount: parseFloat(amount),
-      date: getTodayDate(),
+      date: today,
     });
 
-    setItem('');
-    setCategory('');
-    setAmount('');
-    loadExpenses();
-
-    toast({
-      title: "Expense added",
-      description: `₹${amount} for ${item}`,
-    });
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add expense",
+        variant: "destructive",
+      });
+    } else {
+      setItem('');
+      setCategory('');
+      setAmount('');
+      loadData();
+      toast({
+        title: "Expense added",
+        description: `₹${amount} for ${item}`,
+      });
+    }
   };
 
-  const handleDelete = (id: string) => {
-    deleteExpense(id);
-    loadExpenses();
-    toast({
-      title: "Expense deleted",
-    });
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('expenses').delete().eq('id', id);
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete expense",
+        variant: "destructive",
+      });
+    } else {
+      loadData();
+      toast({ title: "Expense deleted" });
+    }
   };
 
-  const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalExpense = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   const categorySummary = expenses.reduce((acc, exp) => {
-    acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
+    acc[exp.category] = (acc[exp.category] || 0) + Number(exp.amount);
     return acc;
   }, {} as Record<string, number>);
+
+  // Group categories for select
+  const groupedCategories = categories.reduce((acc, cat) => {
+    if (!acc[cat.group_name]) acc[cat.group_name] = [];
+    acc[cat.group_name].push(cat);
+    return acc;
+  }, {} as Record<string, ExpenseCategory[]>);
+
+  const getCategoryEmoji = (categoryName: string) => {
+    return categories.find((c) => c.name === categoryName)?.emoji || '📦';
+  };
 
   return (
     <div className="space-y-6">
@@ -118,17 +177,16 @@ export default function Expenses() {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
-                    {categoryGroups.map((group) => (
-                      <SelectGroup key={group.group}>
-                        <SelectLabel className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                          <span>{group.emoji}</span>
-                          {group.group}
+                    {Object.entries(groupedCategories).map(([group, cats]) => (
+                      <SelectGroup key={group}>
+                        <SelectLabel className="text-xs font-semibold text-muted-foreground">
+                          {group}
                         </SelectLabel>
-                        {group.items.map((cat) => (
-                          <SelectItem key={cat.value} value={cat.value}>
+                        {cats.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.name}>
                             <span className="flex items-center gap-2">
-                              <span>{categoryIcons[cat.value]}</span>
-                              <span>{cat.label}</span>
+                              <span>{cat.emoji}</span>
+                              <span>{cat.name}</span>
                             </span>
                           </SelectItem>
                         ))}
@@ -186,10 +244,8 @@ export default function Expenses() {
                     className="flex items-center justify-between rounded-lg bg-secondary/50 px-3 py-2"
                   >
                     <span className="flex items-center gap-2">
-                      <span>{categoryIcons[cat]}</span>
-                      <span className="text-sm font-medium capitalize">
-                        {cat.replace('_', ' ')}
-                      </span>
+                      <span>{getCategoryEmoji(cat)}</span>
+                      <span className="text-sm font-medium">{cat}</span>
                     </span>
                     <span className="font-semibold">₹{total.toLocaleString()}</span>
                   </div>
@@ -206,7 +262,9 @@ export default function Expenses() {
           <CardTitle>Today's Expenses</CardTitle>
         </CardHeader>
         <CardContent>
-          {expenses.length === 0 ? (
+          {isLoading ? (
+            <div className="py-8 text-center text-muted-foreground">Loading...</div>
+          ) : expenses.length === 0 ? (
             <div className="py-8 text-center">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                 <span className="text-2xl">📝</span>
@@ -224,18 +282,16 @@ export default function Expenses() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-expense/10 text-lg">
-                      {categoryIcons[expense.category]}
+                      {getCategoryEmoji(expense.category)}
                     </div>
                     <div>
-                      <p className="font-medium">{expense.item}</p>
-                      <p className="text-xs capitalize text-muted-foreground">
-                        {expense.category.replace('_', ' ')}
-                      </p>
+                      <p className="font-medium">{expense.item_name}</p>
+                      <p className="text-xs text-muted-foreground">{expense.category}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-semibold text-expense">
-                      ₹{expense.amount.toLocaleString()}
+                      ₹{Number(expense.amount).toLocaleString()}
                     </span>
                     <Button
                       variant="ghost"

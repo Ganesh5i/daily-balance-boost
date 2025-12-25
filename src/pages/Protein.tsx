@@ -4,85 +4,135 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import {
-  getTodayProteinEntries,
-  addProteinEntry,
-  deleteProteinEntry,
-  getTodayDate,
-  proteinFoods,
-  ProteinEntry,
-  ProteinFood,
-} from '@/lib/storage';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
-const PROTEIN_GOAL = 100; // grams
+interface ProteinFood {
+  id: string;
+  name: string;
+  protein_per_unit: number;
+  unit: string;
+}
+
+interface ProteinEntry {
+  id: string;
+  food_name: string;
+  quantity: number;
+  protein_amount: number;
+}
+
+const PROTEIN_GOAL = 100;
 
 export default function Protein() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [entries, setEntries] = useState<ProteinEntry[]>([]);
+  const [foods, setFoods] = useState<ProteinFood[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loadEntries = () => {
-    setEntries(getTodayProteinEntries());
-  };
+  const today = format(new Date(), 'yyyy-MM-dd');
 
   useEffect(() => {
-    loadEntries();
-    // Initialize quantities with default values
-    const defaultQuantities: Record<string, number> = {};
-    proteinFoods.forEach((food) => {
-      defaultQuantities[food.id] = food.defaultQuantity;
-    });
-    setQuantities(defaultQuantities);
-  }, []);
+    if (user) {
+      loadData();
+    }
+  }, [user]);
+
+  const loadData = async () => {
+    if (!user) return;
+    setIsLoading(true);
+
+    const [entriesRes, foodsRes] = await Promise.all([
+      supabase
+        .from('protein_entries')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('date', today)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('protein_foods')
+        .select('*')
+        .order('sort_order', { ascending: true }),
+    ]);
+
+    if (entriesRes.data) setEntries(entriesRes.data);
+    if (foodsRes.data) {
+      setFoods(foodsRes.data);
+      // Initialize quantities
+      const defaultQuantities: Record<string, number> = {};
+      foodsRes.data.forEach((food) => {
+        defaultQuantities[food.id] = food.unit === '1 egg' ? 1 : food.unit.includes('scoop') ? 1 : 100;
+      });
+      setQuantities(defaultQuantities);
+    }
+    setIsLoading(false);
+  };
 
   const calculateProtein = (food: ProteinFood, quantity: number): number => {
-    if (food.unit === 'piece') {
-      return food.proteinPer100g * quantity;
+    if (food.unit === '1 egg' || food.unit === 'scoop') {
+      return food.protein_per_unit * quantity;
     }
-    return (food.proteinPer100g * quantity) / 100;
+    return (food.protein_per_unit * quantity) / 100;
   };
 
-  const handleAddFood = (food: ProteinFood) => {
-    const quantity = quantities[food.id] || food.defaultQuantity;
-    const protein = calculateProtein(food, quantity);
+  const handleAddFood = async (food: ProteinFood) => {
+    if (!user) return;
+    const quantity = quantities[food.id] || 100;
+    const proteinAmount = calculateProtein(food, quantity);
 
-    addProteinEntry({
-      foodId: food.id,
+    const { error } = await supabase.from('protein_entries').insert({
+      user_id: user.id,
+      food_name: food.name,
       quantity,
-      protein,
-      date: getTodayDate(),
+      protein_amount: proteinAmount,
+      date: today,
     });
 
-    loadEntries();
-    toast({
-      title: "Added to today's intake",
-      description: `${quantity}${food.unit} ${food.name} (+${protein.toFixed(1)}g protein)`,
-    });
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add protein entry",
+        variant: "destructive",
+      });
+    } else {
+      loadData();
+      toast({
+        title: "Added to today's intake",
+        description: `${quantity}${food.unit.includes('100') ? 'g' : ''} ${food.name} (+${proteinAmount.toFixed(1)}g protein)`,
+      });
+    }
   };
 
-  const handleDeleteEntry = (id: string) => {
-    deleteProteinEntry(id);
-    loadEntries();
-    toast({ title: "Entry removed" });
+  const handleDeleteEntry = async (id: string) => {
+    const { error } = await supabase.from('protein_entries').delete().eq('id', id);
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete entry",
+        variant: "destructive",
+      });
+    } else {
+      loadData();
+      toast({ title: "Entry removed" });
+    }
   };
 
-  const totalProtein = entries.reduce((sum, e) => sum + e.protein, 0);
+  const totalProtein = entries.reduce((sum, e) => sum + Number(e.protein_amount), 0);
   const progress = (totalProtein / PROTEIN_GOAL) * 100;
   const isGoalMet = totalProtein >= PROTEIN_GOAL;
 
   // Group entries by food
   const groupedEntries = entries.reduce((acc, entry) => {
-    const food = proteinFoods.find((f) => f.id === entry.foodId);
-    if (food) {
-      if (!acc[food.id]) {
-        acc[food.id] = { food, entries: [], totalProtein: 0 };
-      }
-      acc[food.id].entries.push(entry);
-      acc[food.id].totalProtein += entry.protein;
+    if (!acc[entry.food_name]) {
+      acc[entry.food_name] = { entries: [], totalProtein: 0 };
     }
+    acc[entry.food_name].entries.push(entry);
+    acc[entry.food_name].totalProtein += Number(entry.protein_amount);
     return acc;
-  }, {} as Record<string, { food: ProteinFood; entries: ProteinEntry[]; totalProtein: number }>);
+  }, {} as Record<string, { entries: ProteinEntry[]; totalProtein: number }>);
 
   return (
     <div className="space-y-6">
@@ -133,15 +183,15 @@ export default function Protein() {
             <CardTitle className="text-base">Today's Intake</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {Object.values(groupedEntries).map(({ food, entries, totalProtein }) => (
+            {Object.entries(groupedEntries).map(([foodName, { entries, totalProtein }]) => (
               <div
-                key={food.id}
+                key={foodName}
                 className="flex items-center justify-between rounded-xl bg-protein/5 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{food.emoji}</span>
+                  <span className="text-2xl">💪</span>
                   <div>
-                    <p className="font-medium">{food.name}</p>
+                    <p className="font-medium">{foodName}</p>
                     <p className="text-xs text-muted-foreground">
                       {entries.length} serving{entries.length > 1 ? 's' : ''}
                     </p>
@@ -172,52 +222,57 @@ export default function Protein() {
           <CardTitle>High Protein Foods</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {proteinFoods.map((food, index) => (
-              <div
-                key={food.id}
-                className="flex flex-col gap-3 rounded-xl border bg-card p-4 transition-all hover:border-protein/30 sm:flex-row sm:items-center sm:justify-between animate-scale-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-protein/10 text-2xl">
-                    {food.emoji}
+          {isLoading ? (
+            <div className="py-8 text-center text-muted-foreground">Loading...</div>
+          ) : (
+            <div className="space-y-3">
+              {foods.map((food, index) => (
+                <div
+                  key={food.id}
+                  className="flex flex-col gap-3 rounded-xl border bg-card p-4 transition-all hover:border-protein/30 sm:flex-row sm:items-center sm:justify-between animate-scale-in"
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-protein/10 text-2xl">
+                      💪
+                    </div>
+                    <div>
+                      <p className="font-medium">{food.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {food.protein_per_unit}g protein per {food.unit}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">{food.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {food.proteinPer100g}g protein per{' '}
-                      {food.unit === 'piece' ? 'piece' : `100${food.unit}`}
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min="1"
+                      value={quantities[food.id] || 100}
+                      onChange={(e) =>
+                        setQuantities({
+                          ...quantities,
+                          [food.id]: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      className="w-20 text-center"
+                    />
+                    <span className="w-12 text-sm text-muted-foreground">
+                      {food.unit.includes('100') ? 'g' : food.unit}
+                    </span>
+                    <Button
+                      variant="protein"
+                      size="sm"
+                      onClick={() => handleAddFood(food)}
+                      className="min-w-[80px]"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min="1"
-                    value={quantities[food.id] || food.defaultQuantity}
-                    onChange={(e) =>
-                      setQuantities({
-                        ...quantities,
-                        [food.id]: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-20 text-center"
-                  />
-                  <span className="w-12 text-sm text-muted-foreground">{food.unit}</span>
-                  <Button
-                    variant="protein"
-                    size="sm"
-                    onClick={() => handleAddFood(food)}
-                    className="min-w-[80px]"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
