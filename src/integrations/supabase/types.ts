@@ -157,7 +157,10 @@ export type Database = {
       }
       protein_foods: {
         Row: {
+          category: string
           created_at: string
+          default_quantity: number
+          emoji: string
           id: string
           name: string
           protein_per_unit: number
@@ -165,7 +168,10 @@ export type Database = {
           unit: string
         }
         Insert: {
+          category?: string
           created_at?: string
+          default_quantity?: number
+          emoji?: string
           id?: string
           name: string
           protein_per_unit: number
@@ -173,7 +179,10 @@ export type Database = {
           unit?: string
         }
         Update: {
+          category?: string
           created_at?: string
+          default_quantity?: number
+          emoji?: string
           id?: string
           name?: string
           protein_per_unit?: number
