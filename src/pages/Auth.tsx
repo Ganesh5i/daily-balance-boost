@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -186,6 +187,28 @@ export default function Auth() {
                   <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting ? 'Signing in...' : 'Sign In'}
                   </Button>
+                  <button
+                    type="button"
+                    className="w-full text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+                    onClick={async () => {
+                      try {
+                        emailSchema.parse(email);
+                      } catch {
+                        toast({ title: 'Enter your email', description: 'Type your email above, then click Forgot password.', variant: 'destructive' });
+                        return;
+                      }
+                      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: `${window.location.origin}/reset-password`,
+                      });
+                      if (error) {
+                        toast({ title: 'Could not send reset email', description: error.message, variant: 'destructive' });
+                      } else {
+                        toast({ title: 'Reset link sent', description: 'Check your email for the password reset link.' });
+                      }
+                    }}
+                  >
+                    Forgot password?
+                  </button>
                 </form>
               </TabsContent>
 
