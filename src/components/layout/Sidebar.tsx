@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, Drumstick, Droplets, Menu, X, Calendar, FileText, Shield, LogOut } from 'lucide-react';
+import { LayoutDashboard, Wallet, Drumstick, Droplets, Menu, X, Calendar, FileText, Shield, LogOut, DatabaseBackup } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ export function Sidebar() {
     { path: '/water', icon: Droplets, label: 'Water Tracker' },
     { path: '/analysis', icon: Calendar, label: 'Analysis' },
     { path: '/notes', icon: FileText, label: 'Notes / To-Do' },
+    { path: '/backup', icon: DatabaseBackup, label: 'Backup & Restore' },
     ...(isAdmin ? [{ path: '/admin', icon: Shield, label: 'Admin Panel' }] : []),
   ];
 
