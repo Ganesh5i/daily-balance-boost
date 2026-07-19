@@ -13,6 +13,7 @@ import Water from "./pages/Water";
 import Analysis from "./pages/Analysis";
 import Notes from "./pages/Notes";
 import Admin from "./pages/Admin";
+import Backup from "./pages/Backup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -79,6 +80,14 @@ const App = () => (
               element={
                 <Layout>
                   <Admin />
+                </Layout>
+              }
+            />
+            <Route
+              path="/backup"
+              element={
+                <Layout>
+                  <Backup />
                 </Layout>
               }
             />
