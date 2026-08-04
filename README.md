@@ -1,73 +1,167 @@
-# Welcome to your Lovable project
+# Daily Balance & Boost
 
-## Project info
+Create a responsive web application called “Daily Expense & Health Tracker” with a clean, modern, and minimal UI.
+The app is for daily expense tracking, protein-based diet planning, and water intake monitoring for weight gain goals.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+🔹 1. Home / Dashboard Page
 
-## How can I edit this code?
+Show today’s date
 
-There are several ways of editing your application.
+Cards showing:
 
-**Use Lovable**
+Total expense today (₹)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Protein consumed today (grams)
 
-Changes made via Lovable will be committed automatically to this repo.
+Water intake progress (out of 4 liters)
 
-**Use your preferred IDE**
+Progress bars for:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Protein goal (100g per day)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Water goal (4L per day)
 
-Follow these steps:
+🔹 2. Daily Expense Tracker Page
+
+Form to add expense with:
+
+Item name
+
+Category (dropdown)
+
+Amount (₹)
+
+Date (default today)
+
+Predefined categories:
+
+Milk
+
+Tea
+
+Coffee
+
+Dosa
+
+Egg
+
+Protein Foods
+
+Other
+
+Expense list with:
+
+Category icon
+
+Amount
+
+Delete option
+
+Show:
+
+Daily total
+
+Category-wise summary
+
+🔹 3. Protein Diet To-Do Page
+
+Goal: 100 grams protein per day
+
+Display high-to-low protein food list, such as:
+
+Chicken breast (31g / 100g)
+
+Eggs (6g / egg)
+
+Paneer (18g / 100g)
+
+Milk (3.4g / 100ml)
+
+Curd
+
+Peanut butter
+
+Whey protein
+
+Each food item should have:
+
+Checkbox (tick when consumed)
+
+Quantity input
+
+Auto calculation of protein intake
+
+Show total protein consumed today
+
+🔹 4. Water Intake Tracker Page
+
+Daily water goal: 4 Liters
+
+Buttons:
+
++250ml
+
++500ml
+
++1L
+
+Animated progress bar
+
+Visual reminder when goal is completed
+
+🔹 5. Navigation & UI
+
+Top or side navigation with:
+
+Dashboard
+
+Expenses
+
+Protein Diet
+
+Water Tracker
+
+Mobile-friendly responsive layout
+
+Simple icons and soft colors (health + finance theme)
+
+🔹 6. Data Handling
+
+Store data using localStorage
+
+Data should persist on page refresh
+
+Reset option at end of day
+
+🔹 7. Optional Enhancements
+
+Weekly expense chart
+
+Daily streak for protein & water goals
+
+Dark mode toggle
+
+Build the project using HTML, CSS, and JavaScript with clean folder structure and reusable components.
+
+This project was built with [Lovable](https://lovable.dev).
+
+**Live app**: https://track-my-wellness-02.lovable.app
+
+## Build with Lovable
+
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/e189b240-188a-4a71-9428-a5df9bb0b6a5).
+
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+
+## Development
+
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+git clone <this-repository-url>
+cd <repository-name>
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
