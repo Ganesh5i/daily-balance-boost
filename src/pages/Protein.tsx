@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Trash2, Check, Star, Search, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,7 +78,8 @@ export default function Protein() {
   const { toast } = useToast();
   const [entries, setEntries] = useState<ProteinEntry[]>([]);
   const [foods, setFoods] = useState<ProteinFood[]>([]);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [quantities, setQuantities] = useState<Record<string, number | ''>>({});
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
   const [proteinGoal, setProteinGoal] = useState(DEFAULT_GOAL);
@@ -177,7 +178,7 @@ export default function Protein() {
 
   const handleAddFood = async (food: ProteinFood) => {
     if (!user) return;
-    const quantity = quantities[food.id] || Number(food.default_quantity) || 100;
+    const quantity = Number(quantities[food.id]) || Number(food.default_quantity) || 100;
     const proteinAmount = calculateProtein(food, quantity);
 
     const { error } = await supabase.from('protein_entries').insert({
@@ -191,6 +192,13 @@ export default function Protein() {
     if (error) {
       toast({ title: 'Error', description: 'Failed to add', variant: 'destructive' });
     } else {
+      // Clear the quantity input and refocus it for the next entry
+      setQuantities((prev) => ({ ...prev, [food.id]: '' }));
+      requestAnimationFrame(() => {
+        const el = inputRefs.current[food.id];
+        el?.focus();
+        el?.select();
+      });
       loadData();
       toast({
         title: 'Added',
@@ -458,15 +466,22 @@ export default function Protein() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Input
+                          ref={(el) => {
+                            inputRefs.current[food.id] = el;
+                          }}
                           type="number"
                           min="0"
-                          value={quantities[food.id] ?? Number(food.default_quantity) ?? 100}
+                          placeholder={`Enter ${unitLabel || 'qty'}`}
+                          value={quantities[food.id] ?? ''}
                           onChange={(e) =>
-                            setQuantities({
-                              ...quantities,
-                              [food.id]: parseFloat(e.target.value) || 0,
-                            })
+                            setQuantities((prev) => ({
+                              ...prev,
+                              [food.id]: e.target.value === '' ? '' : parseFloat(e.target.value) || 0,
+                            }))
                           }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddFood(food);
+                          }}
                           className="w-20 text-center"
                         />
                         <span className="w-10 text-sm text-muted-foreground">{unitLabel}</span>

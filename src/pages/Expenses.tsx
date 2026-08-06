@@ -7,9 +7,7 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -65,7 +63,7 @@ export default function Expenses() {
       supabase
         .from('expense_categories')
         .select('*')
-        .order('group_name', { ascending: true }),
+        .order('created_at', { ascending: true }),
     ]);
 
     if (expensesRes.data) setExpenses(expensesRes.data);
@@ -131,13 +129,6 @@ export default function Expenses() {
     return acc;
   }, {} as Record<string, number>);
 
-  // Group categories for select
-  const groupedCategories = categories.reduce((acc, cat) => {
-    if (!acc[cat.group_name]) acc[cat.group_name] = [];
-    acc[cat.group_name].push(cat);
-    return acc;
-  }, {} as Record<string, ExpenseCategory[]>);
-
   const getCategoryEmoji = (categoryName: string) => {
     return categories.find((c) => c.name === categoryName)?.emoji || '📦';
   };
@@ -176,21 +167,14 @@ export default function Expenses() {
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {Object.entries(groupedCategories).map(([group, cats]) => (
-                      <SelectGroup key={group}>
-                        <SelectLabel className="text-xs font-semibold text-muted-foreground">
-                          {group}
-                        </SelectLabel>
-                        {cats.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.name}>
-                            <span className="flex items-center gap-2">
-                              <span>{cat.emoji}</span>
-                              <span>{cat.name}</span>
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.name}>
+                        <span className="flex items-center gap-2">
+                          <span>{cat.emoji}</span>
+                          <span>{cat.name}</span>
+                        </span>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
