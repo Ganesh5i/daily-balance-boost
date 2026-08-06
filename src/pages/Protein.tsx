@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Trash2, Check, Star, Search, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,7 +78,8 @@ export default function Protein() {
   const { toast } = useToast();
   const [entries, setEntries] = useState<ProteinEntry[]>([]);
   const [foods, setFoods] = useState<ProteinFood[]>([]);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [quantities, setQuantities] = useState<Record<string, number | ''>>({});
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
   const [proteinGoal, setProteinGoal] = useState(DEFAULT_GOAL);
