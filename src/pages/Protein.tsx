@@ -178,7 +178,7 @@ export default function Protein() {
 
   const handleAddFood = async (food: ProteinFood) => {
     if (!user) return;
-    const quantity = quantities[food.id] || Number(food.default_quantity) || 100;
+    const quantity = Number(quantities[food.id]) || Number(food.default_quantity) || 100;
     const proteinAmount = calculateProtein(food, quantity);
 
     const { error } = await supabase.from('protein_entries').insert({
@@ -192,6 +192,13 @@ export default function Protein() {
     if (error) {
       toast({ title: 'Error', description: 'Failed to add', variant: 'destructive' });
     } else {
+      // Clear the quantity input and refocus it for the next entry
+      setQuantities((prev) => ({ ...prev, [food.id]: '' }));
+      requestAnimationFrame(() => {
+        const el = inputRefs.current[food.id];
+        el?.focus();
+        el?.select();
+      });
       loadData();
       toast({
         title: 'Added',
