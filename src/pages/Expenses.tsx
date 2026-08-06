@@ -176,21 +176,14 @@ export default function Expenses() {
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {Object.entries(groupedCategories).map(([group, cats]) => (
-                      <SelectGroup key={group}>
-                        <SelectLabel className="text-xs font-semibold text-muted-foreground">
-                          {group}
-                        </SelectLabel>
-                        {cats.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.name}>
-                            <span className="flex items-center gap-2">
-                              <span>{cat.emoji}</span>
-                              <span>{cat.name}</span>
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.name}>
+                        <span className="flex items-center gap-2">
+                          <span>{cat.emoji}</span>
+                          <span>{cat.name}</span>
+                        </span>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
