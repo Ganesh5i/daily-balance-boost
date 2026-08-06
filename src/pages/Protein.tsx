@@ -125,11 +125,11 @@ export default function Protein() {
     if (entriesRes.data) setEntries(entriesRes.data);
     if (foodsRes.data) {
       setFoods(foodsRes.data as ProteinFood[]);
-      // Initialize quantities using default_quantity for foods not already saved
+      // Keep inputs empty by default; do not prefill default_quantity
       setQuantities((prev) => {
         const next = { ...prev };
         (foodsRes.data as ProteinFood[]).forEach((f) => {
-          if (next[f.id] === undefined) next[f.id] = Number(f.default_quantity) || 100;
+          if (next[f.id] === undefined) next[f.id] = '';
         });
         return next;
       });
@@ -220,45 +220,20 @@ export default function Protein() {
   const progress = Math.min(100, (totalProtein / proteinGoal) * 100);
   const isGoalMet = totalProtein >= proteinGoal;
 
-  // Build sections: My Daily Foods (favorites + configured daily list), then categories
+  // Build sections: show only favorite foods
   const sections = useMemo(() => {
     const q = search.trim().toLowerCase();
     const matches = (f: ProteinFood) => !q || f.name.toLowerCase().includes(q);
 
-    // Daily foods: favorites first (in favorite order), then DAILY_FOODS_ORDER (unique)
-    const dailyNames: string[] = [];
-    favorites.forEach((n) => { if (!dailyNames.includes(n)) dailyNames.push(n); });
-    DAILY_FOODS_ORDER.forEach((n) => { if (!dailyNames.includes(n)) dailyNames.push(n); });
-
     const foodByName = new Map(foods.map((f) => [f.name, f]));
-    const dailyFoods = dailyNames
+    const favFoods = [...favorites]
       .map((n) => foodByName.get(n))
       .filter((f): f is ProteinFood => !!f && matches(f));
 
-    // Group remaining foods by category (excluding those in daily section? No — user wants
-    // favorites in daily section; category sections show all foods so nothing disappears.)
-    const byCategory: Record<string, ProteinFood[]> = {};
-    foods.forEach((f) => {
-      if (!matches(f)) return;
-      const cat = f.category || 'Other';
-      if (!byCategory[cat]) byCategory[cat] = [];
-      byCategory[cat].push(f);
-    });
-
     const result: { category: string; foods: ProteinFood[] }[] = [];
-    if (dailyFoods.length > 0) {
-      result.push({ category: 'My Daily Foods', foods: dailyFoods });
+    if (favFoods.length > 0) {
+      result.push({ category: 'My Daily Foods', foods: favFoods });
     }
-    CATEGORY_ORDER.forEach((cat) => {
-      if (cat === 'My Daily Foods') return;
-      if (byCategory[cat]?.length) result.push({ category: cat, foods: byCategory[cat] });
-    });
-    // Any leftover categories not in CATEGORY_ORDER
-    Object.keys(byCategory).forEach((cat) => {
-      if (!CATEGORY_ORDER.includes(cat) && byCategory[cat]?.length) {
-        result.push({ category: cat, foods: byCategory[cat] });
-      }
-    });
     return result;
   }, [foods, favorites, search]);
 
@@ -471,7 +446,7 @@ export default function Protein() {
                           }}
                           type="number"
                           min="0"
-                          placeholder={`Enter ${unitLabel || 'qty'}`}
+                          placeholder=""
                           value={quantities[food.id] ?? ''}
                           onChange={(e) =>
                             setQuantities((prev) => ({
