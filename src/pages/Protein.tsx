@@ -69,7 +69,6 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 const FAVORITES_KEY = 'protein_favorites';
-const QUANTITIES_KEY = 'protein_quantities';
 const GOAL_KEY = 'protein_goal';
 const DEFAULT_GOAL = 100;
 
@@ -93,8 +92,6 @@ export default function Protein() {
     try {
       const favs = localStorage.getItem(FAVORITES_KEY);
       if (favs) setFavorites(new Set(JSON.parse(favs)));
-      const q = localStorage.getItem(QUANTITIES_KEY);
-      if (q) setQuantities(JSON.parse(q));
       const g = localStorage.getItem(GOAL_KEY);
       if (g) setProteinGoal(parseInt(g, 10) || DEFAULT_GOAL);
     } catch (e) {
@@ -125,24 +122,12 @@ export default function Protein() {
     if (entriesRes.data) setEntries(entriesRes.data);
     if (foodsRes.data) {
       setFoods(foodsRes.data as ProteinFood[]);
-      // Keep inputs empty by default; do not prefill default_quantity
-      setQuantities((prev) => {
-        const next = { ...prev };
-        (foodsRes.data as ProteinFood[]).forEach((f) => {
-          if (next[f.id] === undefined) next[f.id] = '';
-        });
-        return next;
-      });
+      // Always start with empty inputs
+      setQuantities({});
     }
     setIsLoading(false);
   };
 
-  // Persist quantities
-  useEffect(() => {
-    if (Object.keys(quantities).length > 0) {
-      localStorage.setItem(QUANTITIES_KEY, JSON.stringify(quantities));
-    }
-  }, [quantities]);
 
   const toggleFavorite = (foodName: string) => {
     setFavorites((prev) => {
@@ -225,17 +210,10 @@ export default function Protein() {
     const q = search.trim().toLowerCase();
     const matches = (f: ProteinFood) => !q || f.name.toLowerCase().includes(q);
 
-    const foodByName = new Map(foods.map((f) => [f.name, f]));
-    const favFoods = [...favorites]
-      .map((n) => foodByName.get(n))
-      .filter((f): f is ProteinFood => !!f && matches(f));
-
-    const result: { category: string; foods: ProteinFood[] }[] = [];
-    if (favFoods.length > 0) {
-      result.push({ category: 'My Daily Foods', foods: favFoods });
-    }
-    return result;
-  }, [foods, favorites, search]);
+    const list = foods.filter(matches);
+    if (list.length === 0) return [];
+    return [{ category: 'My Daily Foods', foods: list }];
+  }, [foods, search]);
 
   // Today's grouped entries
   const groupedEntries = entries.reduce((acc, entry) => {
@@ -244,6 +222,13 @@ export default function Protein() {
     acc[entry.food_name].totalProtein += Number(entry.protein_amount);
     return acc;
   }, {} as Record<string, { entries: ProteinEntry[]; totalProtein: number }>);
+
+  const getPlaceholder = (food: ProteinFood) => {
+    const unit = (food.unit || '').toLowerCase();
+    if (unit.includes('egg')) return 'Enter number of eggs';
+    if (unit.includes('ml')) return 'Enter ml';
+    return 'Enter grams (g)';
+  };
 
   const getUnitLabel = (food: ProteinFood) => {
     const unit = (food.unit || '').toLowerCase();
@@ -446,7 +431,7 @@ export default function Protein() {
                           }}
                           type="number"
                           min="0"
-                          placeholder=""
+                          placeholder={getPlaceholder(food)}
                           value={quantities[food.id] ?? ''}
                           onChange={(e) =>
                             setQuantities((prev) => ({
@@ -457,7 +442,10 @@ export default function Protein() {
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleAddFood(food);
                           }}
-                          className="w-20 text-center"
+                          onFocus={() =>
+                            setQuantities((prev) => ({ ...prev, [food.id]: '' }))
+                          }
+                          className="w-44 text-center"
                         />
                         <span className="w-10 text-sm text-muted-foreground">{unitLabel}</span>
                         <Button
