@@ -7,9 +7,7 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -65,7 +63,7 @@ export default function Expenses() {
       supabase
         .from('expense_categories')
         .select('*')
-        .order('group_name', { ascending: true }),
+        .order('created_at', { ascending: true }),
     ]);
 
     if (expensesRes.data) setExpenses(expensesRes.data);
@@ -130,13 +128,6 @@ export default function Expenses() {
     acc[exp.category] = (acc[exp.category] || 0) + Number(exp.amount);
     return acc;
   }, {} as Record<string, number>);
-
-  // Group categories for select
-  const groupedCategories = categories.reduce((acc, cat) => {
-    if (!acc[cat.group_name]) acc[cat.group_name] = [];
-    acc[cat.group_name].push(cat);
-    return acc;
-  }, {} as Record<string, ExpenseCategory[]>);
 
   const getCategoryEmoji = (categoryName: string) => {
     return categories.find((c) => c.name === categoryName)?.emoji || '📦';
