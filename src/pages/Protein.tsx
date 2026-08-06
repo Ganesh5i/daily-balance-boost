@@ -466,15 +466,22 @@ export default function Protein() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Input
+                          ref={(el) => {
+                            inputRefs.current[food.id] = el;
+                          }}
                           type="number"
                           min="0"
-                          value={quantities[food.id] ?? Number(food.default_quantity) ?? 100}
+                          placeholder={`Enter ${unitLabel || 'qty'}`}
+                          value={quantities[food.id] ?? ''}
                           onChange={(e) =>
-                            setQuantities({
-                              ...quantities,
-                              [food.id]: parseFloat(e.target.value) || 0,
-                            })
+                            setQuantities((prev) => ({
+                              ...prev,
+                              [food.id]: e.target.value === '' ? '' : parseFloat(e.target.value) || 0,
+                            }))
                           }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddFood(food);
+                          }}
                           className="w-20 text-center"
                         />
                         <span className="w-10 text-sm text-muted-foreground">{unitLabel}</span>
