@@ -37,12 +37,12 @@ export function StatCard({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="mt-1 text-3xl font-bold tracking-tight">{value}</p>
+            <p className="stat-number mt-1 text-4xl font-bold tracking-tight">{value}</p>
             {subtitle && (
               <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
             )}
           </div>
-          <div className={cn('rounded-xl p-3', iconColorClass)}>{icon}</div>
+          <div className={cn('rounded-md p-2.5', iconColorClass)}>{icon}</div>
         </div>
 
         {progress !== undefined && (
