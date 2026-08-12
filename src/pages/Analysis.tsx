@@ -256,7 +256,7 @@ export default function Analysis() {
           <CardContent>
             {selectedDay.hasData ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-xl bg-expense/10 p-4">
+                <div className="rounded-md bg-expense/10 p-4">
                   <div className="flex items-center gap-2 text-expense">
                     <Wallet className="h-5 w-5" />
                     <span className="text-sm font-medium">Expenses</span>
@@ -264,7 +264,7 @@ export default function Analysis() {
                   <p className="mt-2 text-2xl font-bold">₹{selectedDay.expenses.toLocaleString()}</p>
                 </div>
                 
-                <div className="rounded-xl bg-protein/10 p-4">
+                <div className="rounded-md bg-protein/10 p-4">
                   <div className="flex items-center gap-2 text-protein">
                     <Drumstick className="h-5 w-5" />
                     <span className="text-sm font-medium">Protein</span>
@@ -275,7 +275,7 @@ export default function Analysis() {
                   </p>
                 </div>
                 
-                <div className="rounded-xl bg-water/10 p-4">
+                <div className="rounded-md bg-water/10 p-4">
                   <div className="flex items-center gap-2 text-water">
                     <Droplets className="h-5 w-5" />
                     <span className="text-sm font-medium">Water</span>
@@ -286,7 +286,7 @@ export default function Analysis() {
                   </p>
                 </div>
                 
-                <div className="rounded-xl bg-primary/10 p-4">
+                <div className="rounded-md bg-primary/10 p-4">
                   <div className="flex items-center gap-2 text-primary">
                     <FileText className="h-5 w-5" />
                     <span className="text-sm font-medium">Notes</span>
@@ -315,33 +315,33 @@ export default function Analysis() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border p-4">
+            <div className="rounded-md border p-4">
               <div className="flex items-center gap-2 text-expense">
                 <Wallet className="h-5 w-5" />
                 <span className="text-sm font-medium">Total Expenses</span>
               </div>
-              <p className="mt-2 text-3xl font-bold">
+              <p className="mt-2 stat-number text-3xl font-bold">
                 ₹{Object.values(dayData).reduce((sum, d) => sum + d.expenses, 0).toLocaleString()}
               </p>
             </div>
             
-            <div className="rounded-xl border p-4">
+            <div className="rounded-md border p-4">
               <div className="flex items-center gap-2 text-protein">
                 <Drumstick className="h-5 w-5" />
                 <span className="text-sm font-medium">Days Goal Met (Protein)</span>
               </div>
-              <p className="mt-2 text-3xl font-bold">
+              <p className="mt-2 stat-number text-3xl font-bold">
                 {Object.values(dayData).filter((d) => d.protein >= PROTEIN_GOAL).length}
                 <span className="text-lg text-muted-foreground"> / {daysInMonth.length}</span>
               </p>
             </div>
             
-            <div className="rounded-xl border p-4">
+            <div className="rounded-md border p-4">
               <div className="flex items-center gap-2 text-water">
                 <Droplets className="h-5 w-5" />
                 <span className="text-sm font-medium">Days Goal Met (Water)</span>
               </div>
-              <p className="mt-2 text-3xl font-bold">
+              <p className="mt-2 stat-number text-3xl font-bold">
                 {Object.values(dayData).filter((d) => d.water >= WATER_GOAL).length}
                 <span className="text-lg text-muted-foreground"> / {daysInMonth.length}</span>
               </p>

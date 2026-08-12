@@ -60,7 +60,7 @@ export function Sidebar() {
         {/* Logo */}
         <div className="hidden h-20 items-center border-b px-6 lg:flex">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary">
               <span className="text-xl">📊</span>
             </div>
             <div>
@@ -80,9 +80,9 @@ export function Sidebar() {
                 to={item.path}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-primary text-primary-foreground glow-primary"
+                    ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
               >
@@ -96,7 +96,7 @@ export function Sidebar() {
         {/* Footer with user info */}
         <div className="absolute bottom-0 left-0 right-0 border-t p-4">
           {user && (
-            <div className="rounded-xl bg-secondary/50 p-4">
+            <div className="rounded-md bg-secondary/50 p-4">
               <p className="text-xs font-medium truncate">{user.email}</p>
               <Button
                 variant="ghost"

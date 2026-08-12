@@ -219,7 +219,7 @@ export default function Dashboard() {
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-full ${
                 totalProtein >= PROTEIN_GOAL
-                  ? 'gradient-protein text-protein-foreground'
+                  ? 'bg-protein text-protein-foreground'
                   : 'bg-muted'
               }`}
             >
@@ -245,7 +245,7 @@ export default function Dashboard() {
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-full ${
                 waterIntake >= WATER_GOAL
-                  ? 'gradient-water text-water-foreground'
+                  ? 'bg-water text-water-foreground'
                   : 'bg-muted'
               }`}
             >

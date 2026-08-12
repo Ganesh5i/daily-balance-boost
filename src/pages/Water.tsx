@@ -101,7 +101,7 @@ export default function Water() {
         <CardContent className="relative p-6">
           {/* Background Wave Animation */}
           <div
-            className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out gradient-water opacity-20"
+            className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out bg-water opacity-20"
             style={{
               height: `${Math.min(progress, 100)}%`,
               transform: 'translateY(0)',
@@ -112,7 +112,7 @@ export default function Water() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Today's Intake</p>
-                <p className="text-5xl font-bold text-water">
+                <p className="stat-number text-5xl font-bold text-water">
                   {(waterIntake / 1000).toFixed(1)}L
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
@@ -122,8 +122,8 @@ export default function Water() {
                 </p>
               </div>
               <div
-                className={`flex h-20 w-20 items-center justify-center rounded-3xl ${
-                  isGoalMet ? 'gradient-water animate-pulse-soft' : 'bg-water/10'
+                className={`flex h-20 w-20 items-center justify-center rounded-md ${
+                  isGoalMet ? 'bg-water' : 'bg-water/10'
                 }`}
               >
                 {isGoalMet ? (
@@ -182,7 +182,7 @@ export default function Water() {
             {Array.from({ length: 16 }).map((_, i) => (
               <div
                 key={i}
-                className={`flex h-12 w-12 items-center justify-center rounded-xl border-2 transition-all duration-300 ${
+                className={`flex h-12 w-12 items-center justify-center rounded-md border-2 transition-all duration-300 ${
                   i < glassesCount
                     ? 'border-water bg-water/20 text-water'
                     : 'border-border bg-muted/30 text-muted-foreground/30'

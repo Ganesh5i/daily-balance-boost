@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const progressVariants = cva(
-  "relative h-3 w-full overflow-hidden rounded-full",
+  "relative h-2 w-full overflow-hidden rounded-full",
   {
     variants: {
       variant: {
@@ -27,10 +27,10 @@ const indicatorVariants = cva(
     variants: {
       variant: {
         default: "bg-primary",
-        primary: "gradient-primary",
-        water: "gradient-water",
-        protein: "gradient-protein",
-        expense: "gradient-expense",
+        primary: "bg-primary",
+        water: "bg-water",
+        protein: "bg-protein",
+        expense: "bg-expense",
       },
     },
     defaultVariants: {
@@ -53,7 +53,7 @@ const Progress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={cn(indicatorVariants({ variant }), "animate-fill-progress")}
+      className={cn(indicatorVariants({ variant }))}
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>

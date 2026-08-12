@@ -290,7 +290,7 @@ export default function Admin() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl gradient-primary">
+        <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary">
           <Shield className="h-6 w-6 text-primary-foreground" />
         </div>
         <div>
@@ -558,7 +558,7 @@ export default function Admin() {
                       className="flex items-center justify-between rounded-lg border p-3"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full gradient-primary">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                           <Shield className="h-5 w-5 text-primary-foreground" />
                         </div>
                         <div>
