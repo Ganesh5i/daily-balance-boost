@@ -124,7 +124,7 @@ export default function Auth() {
       <div className="w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-md bg-primary">
             <span className="text-3xl">📊</span>
           </div>
           <h1 className="text-2xl font-bold">Daily Tracker</h1>

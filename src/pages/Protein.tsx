@@ -256,7 +256,7 @@ export default function Protein() {
             <div className="flex-1">
               <p className="text-sm font-medium text-muted-foreground">Today's Protein</p>
               <div className="mt-1 flex items-baseline gap-2">
-                <p className="text-4xl font-bold text-protein">{totalProtein.toFixed(0)}</p>
+                <p className="stat-number text-4xl font-bold text-protein">{totalProtein.toFixed(0)}</p>
                 <span className="text-2xl font-semibold text-muted-foreground">/</span>
                 {editingGoal ? (
                   <Input
@@ -297,8 +297,8 @@ export default function Protein() {
             </div>
             <div
               className={cn(
-                'flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl',
-                isGoalMet ? 'gradient-protein' : 'bg-protein/10'
+                'flex h-16 w-16 shrink-0 items-center justify-center rounded-md',
+                isGoalMet ? 'bg-protein' : 'bg-protein/10'
               )}
             >
               {isGoalMet ? (
@@ -325,7 +325,7 @@ export default function Protein() {
             {Object.entries(groupedEntries).map(([foodName, { entries: es, totalProtein: tp }]) => (
               <div
                 key={foodName}
-                className="flex items-center justify-between rounded-xl bg-protein/5 px-4 py-3"
+                className="flex items-center justify-between rounded-md bg-protein/5 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">
@@ -399,10 +399,10 @@ export default function Protein() {
                   return (
                     <div
                       key={`${section.category}-${food.id}`}
-                      className="flex flex-col gap-3 rounded-xl border bg-card p-4 transition-all hover:border-protein/30 sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-3 rounded-md border bg-card p-4 transition-all hover:border-protein/30 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex flex-1 items-center gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-protein/10 text-2xl">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-protein/10 text-2xl">
                           {food.emoji || '💪'}
                         </div>
                         <div className="min-w-0 flex-1">

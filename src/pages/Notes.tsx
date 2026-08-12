@@ -261,7 +261,7 @@ export default function Notes() {
                       </span>
                     </p>
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full gradient-primary text-lg font-bold text-primary-foreground">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-foreground">
                     {Math.round(progress)}%
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function Notes() {
                   {tasks.map((task, index) => (
                     <div
                       key={task.id}
-                      className={`flex items-center gap-3 rounded-xl border p-4 transition-all animate-scale-in ${
+                      className={`flex items-center gap-3 rounded-md border p-4 transition-all animate-scale-in ${
                         task.is_completed ? 'bg-muted/50' : 'bg-card hover:bg-secondary/30'
                       }`}
                       style={{ animationDelay: `${index * 0.05}s` }}
@@ -400,7 +400,7 @@ export default function Notes() {
                   {quickNotes.map((note, index) => (
                     <div
                       key={note.id}
-                      className="rounded-xl border bg-card p-4 transition-all animate-scale-in hover:bg-secondary/30"
+                      className="rounded-md border bg-card p-4 transition-all animate-scale-in hover:bg-secondary/30"
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div className="flex items-start justify-between gap-3">

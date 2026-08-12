@@ -205,11 +205,11 @@ export default function Expenses() {
             <CardContent className="flex items-center justify-between p-5">
               <div>
                 <p className="text-sm text-muted-foreground">Today's Total</p>
-                <p className="text-3xl font-bold text-expense">
+                <p className="stat-number text-3xl font-bold text-expense">
                   ₹{totalExpense.toLocaleString()}
                 </p>
               </div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl gradient-expense">
+              <div className="flex h-14 w-14 items-center justify-center rounded-md bg-expense">
                 <span className="text-2xl">💰</span>
               </div>
             </CardContent>
@@ -261,7 +261,7 @@ export default function Expenses() {
               {expenses.map((expense, index) => (
                 <div
                   key={expense.id}
-                  className="flex items-center justify-between rounded-xl border bg-card p-4 transition-all hover:bg-secondary/30 animate-scale-in"
+                  className="flex items-center justify-between rounded-md border bg-card p-4 transition-all hover:bg-secondary/30 animate-scale-in"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <div className="flex items-center gap-3">
