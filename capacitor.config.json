@@ -1,0 +1,9 @@
+{
+  "appId": "app.lovable.e189b240188a4a719428a5df9bb0b6a5",
+  "appName": "Daily Tracker",
+  "webDir": "dist",
+  "server": {
+    "url": "https://e189b240-188a-4a71-9428-a5df9bb0b6a5.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  }
+}
