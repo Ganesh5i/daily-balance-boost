@@ -13,6 +13,7 @@ const progressVariants = cva(
         water: "bg-water/20",
         protein: "bg-protein/20",
         expense: "bg-expense/20",
+        notes: "bg-notes/20",
       },
     },
     defaultVariants: {
@@ -31,6 +32,7 @@ const indicatorVariants = cva(
         water: "bg-water",
         protein: "bg-protein",
         expense: "bg-expense",
+        notes: "bg-notes",
       },
     },
     defaultVariants: {

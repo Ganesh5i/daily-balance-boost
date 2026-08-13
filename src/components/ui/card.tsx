@@ -3,16 +3,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const cardVariants = cva(
-  "rounded-md border border-border text-card-foreground transition-colors",
+  "rounded-lg border border-border/60 text-card-foreground shadow-card transition-colors",
   {
     variants: {
       variant: {
         default: "bg-card",
-        elevated: "bg-card",
-        primary: "border-primary/20 bg-primary/5",
-        water: "border-water/20 bg-water/5",
-        protein: "border-protein/20 bg-protein/5",
-        expense: "border-expense/20 bg-expense/5",
+        elevated: "bg-card shadow-elevated",
+        primary: "border-primary/15 bg-primary/5",
+        water: "border-water/15 bg-water-soft",
+        protein: "border-protein/15 bg-protein-soft",
+        expense: "border-expense/15 bg-expense-soft",
+        notes: "border-notes/15 bg-notes-soft",
       },
     },
     defaultVariants: {
