@@ -157,7 +157,7 @@ export default function Dashboard() {
           value={`${notesCount}`}
           subtitle="Tasks & reminders"
           icon={<FileText className="h-5 w-5" />}
-          variant="default"
+          variant="notes"
         />
       </div>
 
