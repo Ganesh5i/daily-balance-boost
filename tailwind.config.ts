@@ -54,14 +54,22 @@ export default {
         water: {
           DEFAULT: "hsl(var(--water))",
           foreground: "hsl(var(--water-foreground))",
+          soft: "hsl(var(--water-soft))",
         },
         protein: {
           DEFAULT: "hsl(var(--protein))",
           foreground: "hsl(var(--protein-foreground))",
+          soft: "hsl(var(--protein-soft))",
         },
         expense: {
           DEFAULT: "hsl(var(--expense))",
           foreground: "hsl(var(--expense-foreground))",
+          soft: "hsl(var(--expense-soft))",
+        },
+        notes: {
+          DEFAULT: "hsl(var(--notes))",
+          foreground: "hsl(var(--notes-foreground))",
+          soft: "hsl(var(--notes-soft))",
         },
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
@@ -76,6 +84,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      boxShadow: {
+        card: "var(--shadow-card)",
+        elevated: "var(--shadow-elevated)",
       },
       borderRadius: {
         lg: "var(--radius)",

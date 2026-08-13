@@ -10,7 +10,7 @@ interface StatCardProps {
   icon: ReactNode;
   progress?: number;
   progressLabel?: string;
-  variant?: 'default' | 'water' | 'protein' | 'expense';
+  variant?: 'default' | 'water' | 'protein' | 'expense' | 'notes';
   className?: string;
 }
 
@@ -25,24 +25,47 @@ export function StatCard({
   className,
 }: StatCardProps) {
   const iconColorClass = {
-    default: 'bg-primary/10 text-primary',
-    water: 'bg-water/10 text-water',
-    protein: 'bg-protein/10 text-protein',
-    expense: 'bg-expense/10 text-expense',
+    default: 'bg-primary/12 text-primary',
+    water: 'bg-water/15 text-water',
+    protein: 'bg-protein/15 text-protein',
+    expense: 'bg-expense/15 text-expense',
+    notes: 'bg-notes/15 text-notes',
+  }[variant];
+
+  const valueColorClass = {
+    default: 'text-primary',
+    water: 'text-water',
+    protein: 'text-protein',
+    expense: 'text-expense',
+    notes: 'text-notes',
   }[variant];
 
   return (
     <Card variant={variant} className={cn('animate-slide-up', className)}>
       <CardContent className="p-5">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="stat-number mt-1 stat-number text-4xl font-bold tracking-tight">{value}</p>
+            <p
+              className={cn(
+                'stat-number mt-1.5 text-[2.75rem] font-bold leading-none tracking-tight',
+                valueColorClass
+              )}
+            >
+              {value}
+            </p>
             {subtitle && (
-              <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
             )}
           </div>
-          <div className={cn('rounded-md p-2.5', iconColorClass)}>{icon}</div>
+          <div
+            className={cn(
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
+              iconColorClass
+            )}
+          >
+            {icon}
+          </div>
         </div>
 
         {progress !== undefined && (
@@ -54,6 +77,7 @@ export function StatCard({
             <Progress
               value={Math.min(progress, 100)}
               variant={variant === 'default' ? 'primary' : variant}
+              className="h-2.5"
             />
           </div>
         )}

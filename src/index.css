@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 60 9% 97%;
+    --background: 40 33% 97%;
     --foreground: 210 12% 10%;
 
     --card: 0 0% 100%;
@@ -17,23 +17,30 @@
     --primary: 165 30% 24%;
     --primary-foreground: 60 9% 97%;
 
-    --secondary: 60 8% 93%;
+    --secondary: 38 24% 93%;
     --secondary-foreground: 210 12% 20%;
 
-    --muted: 60 8% 93%;
+    --muted: 38 24% 93%;
     --muted-foreground: 210 8% 45%;
 
     --accent: 20 25% 40%;
     --accent-foreground: 60 9% 97%;
 
-    --water: 205 20% 40%;
+    --water: 205 45% 38%;
     --water-foreground: 60 9% 97%;
+    --water-soft: 205 60% 94%;
 
-    --protein: 150 18% 34%;
+    --protein: 152 32% 27%;
     --protein-foreground: 60 9% 97%;
+    --protein-soft: 145 32% 92%;
 
-    --expense: 20 25% 40%;
+    --expense: 20 62% 44%;
     --expense-foreground: 60 9% 97%;
+    --expense-soft: 28 70% 93%;
+
+    --notes: 275 30% 34%;
+    --notes-foreground: 60 9% 97%;
+    --notes-soft: 275 40% 95%;
 
     --success: 150 18% 34%;
     --warning: 35 35% 42%;
@@ -42,11 +49,11 @@
     --destructive: 0 45% 42%;
     --destructive-foreground: 60 9% 97%;
 
-    --border: 60 6% 88%;
-    --input: 60 6% 88%;
+    --border: 36 18% 89%;
+    --input: 36 18% 89%;
     --ring: 165 30% 24%;
 
-    --radius: 0.375rem;
+    --radius: 0.7rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 210 12% 20%;
@@ -57,9 +64,9 @@
     --sidebar-border: 60 6% 90%;
     --sidebar-ring: 165 30% 24%;
 
-    /* Flat shadows */
-    --shadow-card: none;
-    --shadow-elevated: 0 1px 2px 0 hsl(210 12% 10% / 0.05);
+    /* Soft premium shadows */
+    --shadow-card: 0 1px 2px 0 hsl(24 20% 20% / 0.04), 0 6px 18px -8px hsl(24 20% 20% / 0.12);
+    --shadow-elevated: 0 2px 4px 0 hsl(24 20% 20% / 0.06), 0 12px 28px -12px hsl(24 20% 20% / 0.16);
   }
 
   .dark {
@@ -84,14 +91,21 @@
     --accent: 20 22% 55%;
     --accent-foreground: 210 12% 9%;
 
-    --water: 205 20% 62%;
+    --water: 205 40% 62%;
     --water-foreground: 210 12% 9%;
+    --water-soft: 205 25% 18%;
 
-    --protein: 150 18% 56%;
+    --protein: 150 26% 56%;
     --protein-foreground: 210 12% 9%;
+    --protein-soft: 150 20% 16%;
 
-    --expense: 20 25% 58%;
+    --expense: 20 45% 58%;
     --expense-foreground: 210 12% 9%;
+    --expense-soft: 20 25% 18%;
+
+    --notes: 275 35% 68%;
+    --notes-foreground: 210 12% 9%;
+    --notes-soft: 275 20% 18%;
 
     --destructive: 0 45% 48%;
     --destructive-foreground: 60 9% 95%;
@@ -129,7 +143,7 @@
 
 @layer utilities {
   .card-shadow {
-    box-shadow: none;
+    box-shadow: var(--shadow-card);
   }
 
   .elevated-shadow {
