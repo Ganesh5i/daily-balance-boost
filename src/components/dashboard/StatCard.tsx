@@ -77,6 +77,7 @@ export function StatCard({
             <Progress
               value={Math.min(progress, 100)}
               variant={variant === 'default' ? 'primary' : variant}
+              className="h-2.5"
             />
           </div>
         )}
