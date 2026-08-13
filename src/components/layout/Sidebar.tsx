@@ -30,7 +30,14 @@ export function Sidebar() {
     <>
       {/* Mobile Header */}
       <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-card px-4 lg:hidden">
-        <h1 className="text-lg font-bold text-foreground">Daily Tracker</h1>
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/app-icon-192.png"
+            alt="Daily Tracker app icon"
+            className="h-9 w-9 rounded-lg"
+          />
+          <h1 className="text-lg font-bold text-foreground">Daily Tracker</h1>
+        </div>
         <Button
           variant="ghost"
           size="icon"
@@ -60,9 +67,11 @@ export function Sidebar() {
         {/* Logo */}
         <div className="hidden h-20 items-center border-b px-6 lg:flex">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary">
-              <span className="text-xl">📊</span>
-            </div>
+            <img
+              src="/app-icon-192.png"
+              alt="Daily Tracker app icon"
+              className="h-10 w-10 rounded-lg"
+            />
             <div>
               <h1 className="text-lg font-bold text-foreground">Daily Tracker</h1>
               <p className="text-xs text-muted-foreground">Health & Expense</p>
