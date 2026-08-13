@@ -67,9 +67,11 @@ export function Sidebar() {
         {/* Logo */}
         <div className="hidden h-20 items-center border-b px-6 lg:flex">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary">
-              <span className="text-xl">📊</span>
-            </div>
+            <img
+              src="/app-icon-192.png"
+              alt="Daily Tracker app icon"
+              className="h-10 w-10 rounded-lg"
+            />
             <div>
               <h1 className="text-lg font-bold text-foreground">Daily Tracker</h1>
               <p className="text-xs text-muted-foreground">Health & Expense</p>
